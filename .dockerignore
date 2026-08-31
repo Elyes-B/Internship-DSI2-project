@@ -1,0 +1,21 @@
+#git related
+.git
+.gitignore
+
+# dockerfiles
+docker-compose*.yml
+.dockerignore
+Dockerfile*
+
+
+
+# anggular related
+frontend/dist
+frontend/.angular
+frontend/ajna-output.json
+
+# codeigniter
+backend/vendor
+backend/writable/*
+!backend/writable/index.html
+backend/tests

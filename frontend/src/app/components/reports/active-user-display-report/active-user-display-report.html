@@ -1,0 +1,111 @@
+<div id="pdf-report-root" class="pdf-container" style="display: block; width: 100%; min-height: 200px; background-color: #ffffff; padding: 20px;">
+  <p>search date: {{today}}</p>
+  <!-- Report Header & Active Mode Metadata -->
+  <div class="mb-3 border-bottom pb-2">
+    <h3 class="text-primary m-0">Users Display Report</h3>
+
+    @if (reportMode === 'keycloak') {
+      <small class="text-muted d-block mt-1">Total Exported Records (Keycloak Sessions): {{ keycloakSessions.length }}</small>
+    } @else if (reportMode === 'database') {
+      <small class="text-muted d-block mt-1">Total Exported Records (DB Users): {{ users.length }}</small>
+    }
+
+    <h4 class="text-secondary m-0 mt-3">Filters Used</h4>
+
+    @if (reportMode === 'keycloak') {
+      <p class="mb-1">Search Session ID: {{ sessionFilters.searchSessionId || 'None' }}</p>
+      <p class="mb-1">Search Keycloak ID: {{ sessionFilters.searchKeycloakId || 'None' }}</p>
+      <p class="mb-1">Search Username: {{ sessionFilters.searchUsername || 'None' }}</p>
+      <p class="mb-1">Search IP Address: {{ sessionFilters.searchIpAddress || 'None' }}</p>
+      <p class="mb-1">Only active users Selected: {{ sessionFilters.onlyActiveSessions?'True':'False' }}</p>
+    } @else if (reportMode === 'database') {
+      <p class="mb-1">Search ID: {{ usersFilters.searchId || 'None' }}</p>
+      <p class="mb-1">Search Query: {{ usersFilters.searchQuery || 'None' }}</p>
+      <p class="mb-1">Selected Role: {{ usersFilters.selectedRole || 'None' }}</p>
+      <p class="mb-1">Selected Status: {{ usersFilters.selectedStatus || 'None' }}</p>
+    }
+  </div>
+
+  <!-- 1. Keycloak Sessions Table -->
+  @if (reportMode === 'keycloak') {
+    <table class="table table-bordered align-middle mb-0" style="width: 100%;">
+      <thead class="table-light">
+        <tr>
+          <th>Session ID</th>
+          <th>User ID</th>
+          <th>Username</th>
+          <th>IP Address</th>
+          <th>Start Time</th>
+          <th>Last Access</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (session of keycloakSessions; track session.id) {
+          <tr>
+            <td class="fw-semibold">{{ session.id }}</td>
+            <td class="fw-semibold">{{ session.userId }}</td>
+            <td>{{ session.username }}</td>
+            <td>
+              <span class="badge bg-info-subtle text-info border border-info-subtle">{{ session.ipAddress }}</span>
+            </td>
+            <td>{{ session.start }}</td>
+            <td>{{ session.lastAccess }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="text-center text-muted py-3">No active Keycloak sessions found.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  <!-- 2. Database Users Table -->
+  @else if (reportMode === 'database') {
+    <table class="table table-bordered align-middle mb-0" style="width: 100%;">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Created Date</th>
+          <th>Updated Date</th>
+          <th>Is Deleted</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users; track user.id) {
+          <tr>
+            <td class="fw-semibold">{{ user.id }}</td>
+            <td class="fw-semibold">{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              @if (user.role === 'superadmin') {
+                <span class="badge bg-danger-subtle text-danger border border-danger">Superadmin</span>
+              } @else if (user.role === 'admin') {
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Admin</span>
+              } @else {
+                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">User</span>
+              }
+            </td>
+            <td>{{ user.created_at }}</td>
+            <td>{{ user.updated_at }}</td>
+            <td class="pe-4 align-middle">
+              @if (user.is_deleted) {
+                Yes
+              } @else {
+                No
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="text-center text-muted py-3">No database users found.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+</div>

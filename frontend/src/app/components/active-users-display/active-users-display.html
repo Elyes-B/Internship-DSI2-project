@@ -1,0 +1,285 @@
+<div class="container-fluid py-4 px-4 app-canvas">
+
+  <!-- Header & Tab Switcher -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="h4 fw-bold app-text-main mb-1">
+        <i class="bi bi-people-fill app-text-accent me-2"></i>User Management
+      </h2>
+      <p class="app-text-muted small mb-0">Switch between Keycloak session tracking and database records.</p>
+    </div>
+
+    <div class="btn-group app-card p-1" role="group" aria-label="Table Selection">
+      <button
+        type="button"
+        class="btn btn-sm"
+        [class.btn-accent]="activeTab === 'keycloak'"
+        [class.btn-light]="activeTab !== 'keycloak'"
+        [class.app-text-muted]="activeTab !== 'keycloak'"
+        (click)="switchTab('keycloak')">
+        <i class="bi bi-shield-lock me-1"></i> Keycloak Sessions
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-sm"
+        [class.btn-accent]="activeTab === 'database'"
+        [class.btn-light]="activeTab !== 'database'"
+        [class.app-text-muted]="activeTab !== 'database'"
+        (click)="switchTab('database')">
+        <i class="bi bi-database me-1"></i> Database Users
+      </button>
+    </div>
+  </div>
+
+  <!-- Counters Component -->
+
+  <app-users-counter
+    [allUsersCounter]="totalUsersCount"
+    [allAdminsCounter]="totalAdminCount"
+    [allSuperAdminsCounter]="totalSuperadminCount">
+  </app-users-counter>
+
+  <!-- Searchbar Component -->
+   @if(activeTab == 'database'){
+  <app-searchbar-users
+    (filterApplied)="onFiltersApplied()"
+    (filterReset)="onFiltersReset()"
+    (sendFilters)="recieveFilters($event)">
+  </app-searchbar-users>
+  }
+  @else{
+  <app-searchbar-sessions
+  (filterApplied)="onFiltersApplied()"
+    (filterReset)="onFiltersReset()"
+    (sendFilters)="recieveSessionFilters($event)">
+
+  </app-searchbar-sessions>
+}
+
+  <!-- Export Modal Trigger Button -->
+  <button
+    type="button"
+    class="btn btn-outline-primary d-inline-flex align-items-center gap-2 mb-3"
+    data-bs-toggle="modal"
+    data-bs-target="#exportPdfModal">
+    <i class="bi bi-file-earmark-pdf"></i>
+    Export
+  </button>
+
+  <!-- USER DATA TABLE -->
+  <div class="app-card overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light border-bottom">
+          @if (activeTab === 'keycloak') {
+            <tr>
+              <th scope="col" class="ps-4">Session ID</th>
+              <th scope="col">Keycloak User ID</th>
+              <th scope="col">Username</th>
+              <th scope="col">IP Address</th>
+              <th scope="col">Login Time</th>
+              <th scope="col" class="pe-4">Last Login Time</th>
+            </tr>
+          } @else {
+            <tr>
+              <th scope="col" class="ps-4">ID</th>
+              <th scope="col">Username</th>
+              <th scope="col">Email</th>
+              <th scope="col">Role</th>
+              <th scope="col">Created Date</th>
+              <th scope="col">Updated Date</th>
+              <th scope="col" class="pe-4">Is Deleted</th>
+            </tr>
+          }
+        </thead>
+        <tbody>
+          @if (isLoading) {
+            <tr>
+              <td colspan="7" class="text-center py-5 app-text-muted">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Loading records...
+              </td>
+            </tr>
+          } @else if (currentPaginatedItems.length === 0) {
+            <tr>
+              <td colspan="7" class="text-center py-5 app-text-muted">
+                <i class="bi bi-person-x fs-3 d-block mb-2"></i>
+                No {{ activeTab === 'keycloak' ? 'Keycloak sessions' : 'users' }} found matching the selected criteria.
+              </td>
+            </tr>
+          } @else {
+            @if (activeTab === 'keycloak') {
+              @for (session of paginatedKeycloakSessions; track session.id) {
+                <tr>
+                  <td class="ps-4 font-monospace small app-text-main">{{ session.id }}</td>
+                  <td class="font-monospace small app-text-muted">{{ session.userId }}</td>
+                  <td class="fw-semibold app-text-main">
+                    <i class="bi bi-person-circle app-text-accent me-1"></i>
+                    {{ session.username }}
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark border">{{ session.ipAddress }}</span>
+                  </td>
+                  <td class="app-text-muted small">{{ session.start }}</td>
+                  <td class="pe-4 app-text-muted small">{{ session.lastAccess }}</td>
+                </tr>
+              }
+            } @else {
+              @for (user of paginatedUsers; track user.id) {
+                <tr>
+                  <td class="ps-4 fw-semibold app-text-main">
+                    {{ user.id }}
+                  </td>
+                  <td class="fw-semibold app-text-main">
+                    {{ user.username }}
+                  </td>
+                  <td class="app-text-muted">
+                    {{ user.email }}
+                  </td>
+                  <td>
+                    @if (user.role === 'superadmin') {
+                      <span class="badge bg-danger-subtle text-danger border border-danger">Superadmin</span>
+                    } @else if (user.role === 'admin') {
+                      <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Admin</span>
+                    } @else {
+                      <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">User</span>
+                    }
+                  </td>
+                  <td class="app-text-muted small">
+                    {{ user.created_at }}
+                  </td>
+                  <td class="app-text-muted small">
+                    {{ user.updated_at }}
+                  </td>
+                  <td class="pe-4 align-middle">
+                    @if (user.is_deleted == true) {
+                      <i class="bi bi-check-lg text-success fw-bold fs-6" title="Active"></i>
+                    } @else {
+                      <i class="bi bi-x-lg text-danger fw-bold fs-6" title="Deleted"></i>
+                    }
+                  </td>
+                </tr>
+              }
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PAGINATION FOOTER -->
+    <div class="d-flex align-items-center justify-content-between p-3 border-top bg-light">
+      <div class="small app-text-muted">
+        Showing
+        <strong>{{ currentActiveList.length > 0 ? (currentPage - 1) * pageSize + 1 : 0 }}</strong>
+        to
+        <strong>{{ Math.min(currentPage * pageSize, currentActiveList.length) }}</strong>
+        of
+        <strong>{{ currentActiveList.length }}</strong> {{ activeTab === 'keycloak' ? 'sessions' : 'users' }}
+      </div>
+
+      <nav aria-label="User table navigation">
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+              Previous
+            </button>
+          </li>
+
+          <li class="page-item active" aria-current="page">
+            <span class="page-link bg-secondary border-secondary">
+              {{ currentPage }} / {{ totalPages }}
+            </span>
+          </li>
+
+          <li class="page-item" [class.disabled]="currentPage === totalPages || totalPages === 0">
+            <button class="page-link" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages || totalPages === 0">
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="modal fade" id="exportPdfModal" tabindex="-1" aria-labelledby="exportPdfModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exportPdfModalLabel">
+          <i class="bi bi-box-arrow-up-right me-2 text-primary"></i>Export Data
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body d-flex flex-column gap-3">
+
+        <div>
+          <label for="exportFormatSelect" class="form-label fw-semibold">Export Format</label>
+          <select
+            id="exportFormatSelect"
+            class="form-select"
+            [(ngModel)]="selectedExportFormat">
+            <option value="pdf">PDF Document (.pdf)</option>
+            <option value="excel">Excel Spreadsheet (.xlsx)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="maxUsersInput" class="form-label fw-semibold">Maximum Items to Export</label>
+          <input
+            type="number"
+            id="maxUsersInput"
+            class="form-control"
+            [(ngModel)]="exportMaxLimit"
+            [disabled]="exportAllUsers"
+            min="1"
+            [max]="currentActiveList.length"
+            placeholder="e.g. 100">
+        </div>
+
+        <div class="form-check">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            id="importAllUsers"
+            [(ngModel)]="exportAllUsers">
+          <label class="form-check-label fw-semibold" for="importAllUsers">
+            Export all records ({{ currentActiveList.length }} total)
+          </label>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary btn" data-bs-dismiss="modal">Cancel</button>
+        <button
+          type="button"
+          class="btn btn-primary d-inline-flex align-items-center gap-2"
+          (click)="handleExport()"
+          data-bs-dismiss="modal">
+          @if (isExporting) {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Generating Export...
+          } @else {
+            <i class="bi" [ngClass]="selectedExportFormat === 'excel' ? 'bi-file-earmark-excel' : 'bi-file-earmark-pdf'"></i>
+            Download {{ selectedExportFormat }}
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div style="position: absolute; top: 0; left: 0; width: 1000px; z-index: -9999; visibility: hidden;">
+  <app-active-user-display-report
+  [users]="exportUsers"
+  [keycloakSessions]="exportSessions"
+  [usersFilters]="usersFilters"
+  [sessionFilters]="sessionFilters"
+  [reportMode]="activeTab"
+  >
+
+  </app-active-user-display-report>
+</div>

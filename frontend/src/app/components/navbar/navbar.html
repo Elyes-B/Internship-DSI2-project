@@ -1,0 +1,18 @@
+<nav class="navbar">
+  <div class="nav-links">
+    <a routerLink="/admin/users" routerLinkActive="active">Users</a>
+    <a routerLink="/admin/sessions" routerLinkActive="active">Sessions</a>
+    <a routerLink="/admin/logs" routerLinkActive="active">Logs</a>
+  </div>
+
+  <div class="nav-auth">
+    @if (authService.isLoggedIn()) {
+      <span class="user-greeting">
+        Welcome, <strong>{{ authService.getUsername() || 'User' }}</strong>
+      </span>
+      <button (click)="logout()" class="btn btn-logout">Logout</button>
+    } @else {
+      <button (click)="login()" class="btn btn-login">Login</button>
+    }
+  </div>
+</nav>

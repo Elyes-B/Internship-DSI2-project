@@ -1,0 +1,26 @@
+# install a lightweight version of nodejs
+FROM node:20-alpine
+
+# specifiying the working directory
+WORKDIR /app
+
+#install the angular cli globally
+RUN npm install axios
+RUN npm install -g @angular/cli
+
+# copies packages files
+COPY package*.json ./
+
+# installs dependencies
+RUN npm install
+RUN npm install keycloak-angular@^21.0.0 keycloak-js
+RUN npm install zone.js
+RUN npm install bootstrap bootstrap-icons
+RUN npm install html2pdf.js
+RUN npm install xlsx
+
+# specifying the port
+EXPOSE 4200
+
+# specifying default command to run the app
+CMD ["ng", "serve", "--host", "0.0.0.0"]

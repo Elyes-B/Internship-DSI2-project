@@ -1,0 +1,25 @@
+# base php image with Apache server
+FROM php:8.2-apache
+
+# sete internal working folder
+WORKDIR /var/www/html
+
+# install defependencies and php extensions(dont know exactly what they are i honestly just copied them from the internet)
+RUN apt-get update && apt-get install -y \
+    libicu-dev \
+    git \
+    unzip \
+    libzip-dev \
+    && docker-php-ext-install intl pdo_mysql zip
+
+# downloading required dependencies
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN composer require --dev fakerphp/faker
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN composer require firebase/php-jwt
+
+# set port to 8080
+EXPOSE 8080
+
+# commands
+CMD ["php", "spark", "serve", "--host", "0.0.0.0", "--port", "8080"]

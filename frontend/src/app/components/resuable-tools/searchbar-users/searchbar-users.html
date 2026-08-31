@@ -1,0 +1,76 @@
+<div class="app-card p-4 mb-4">
+  <div class="row g-2 align-items-end">
+
+    <!-- 1. User ID (Width: 2/12) -->
+    <div class="col-12 col-sm-4 col-md-2">
+      <label class="form-label fw-semibold app-text-main small">User ID</label>
+      <div class="input-group">
+        <span class="input-group-text bg-transparent text-muted px-2">
+          <i class="bi bi-hash"></i>
+        </span>
+        <input
+          type="number"
+          class="form-control"
+          placeholder="ID..."
+          [(ngModel)]="searchId"
+          (keyup.enter)="applyFilters()"
+        />
+      </div>
+    </div>
+
+    <!-- 2. Search Query (Width: 3/12) -->
+    <div class="col-12 col-sm-8 col-md-3">
+      <label class="form-label fw-semibold app-text-main small">Search</label>
+      <div class="input-group">
+        <span class="input-group-text bg-transparent text-muted px-2">
+          <i class="bi bi-search"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Username or email..."
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="applyFilters()"
+        />
+      </div>
+    </div>
+
+    <!-- 3. Role Filter (Width: 2/12) -->
+    <div class="col-12 col-sm-6 col-md-2">
+      <label class="form-label fw-semibold app-text-main small">Role</label>
+      <select class="form-select" [(ngModel)]="selectedRole" (change)="applyFilters()">
+        <option value="">All Roles</option>
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+        <option value="superadmin">Superadmin</option>
+      </select>
+    </div>
+
+    <!-- 4. Status Filter (Width: 2/12) -->
+    <div class="col-12 col-sm-6 col-md-2">
+      <label class="form-label fw-semibold app-text-main small">Status</label>
+      <select class="form-select" [(ngModel)]="selectedStatus" (change)="applyFilters()">
+        <option value="">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="deleted">Deleted</option>
+      </select>
+    </div>
+
+    <!-- 5. Action Buttons (Width: 3/12) -->
+    <div class="col-12 col-md-3 d-flex gap-2">
+      <button
+        type="button"
+        class="btn btn-accent w-100 text-nowrap"
+        (click)="applyFilters()">
+        <i class="bi bi-funnel-fill me-1"></i> Apply
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary w-100 text-nowrap"
+        (click)="resetFilters()">
+        <i class="bi bi-x-circle me-1"></i> Reset
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,52 @@
+<div id="pdf-report-root" class="pdf-container" style="display: block; width: 100%; min-height: 200px; background-color: #ffffff; padding: 20px;">
+  <div class="mb-3 border-bottom pb-2">
+    <h3 class="text-primary m-0">Users display Report</h3>
+    <small class="text-muted">Total Exported Records: {{ users.length }}</small>
+    <h4 class="text-secondary m-0">filters used</h4>
+    <p>Search id: {{id}}</p>
+   <p>Search query: {{searchQuery}}</p>
+   <p>selected role: {{selectedRole}}</p>
+   <p>selected status: {{selectedStatus}}</p>
+  </div>
+
+  <table class="table table-bordered align-middle mb-0" style="width: 100%;">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Created Date</th>
+        <th>Updated Date</th>
+        <th>Is Deleted</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of users; track user.id) {
+        <tr>
+          <td class="fw-semibold">{{ user.id }}</td>
+          <td class="fw-semibold">{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            @if (user.role === 'superadmin') {
+              <span class="badge bg-danger-subtle text-danger border border-danger">Superadmin</span>
+            } @else if (user.role === 'admin') {
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Admin</span>
+            } @else {
+              <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">User</span>
+            }
+          </td>
+          <td>{{ user.created_at }}</td>
+          <td>{{ user.updated_at }}</td>
+           <td class="pe-4 align-middle">
+                  @if (user.is_deleted == true) {
+                    Yes
+                  } @else {
+                      No
+                  }
+                </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

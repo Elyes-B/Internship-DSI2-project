@@ -1,0 +1,72 @@
+/* 1. Global Bootstrap & Icon Imports */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+/* 2. Global Palette Custom Properties */
+:root {
+  --canvas-bg: #F8FAFC;       /* Slate 50 */
+  --surface-card: #FFFFFF;    /* Pure White */
+  --primary-accent: #4F46E5;  /* Indigo 600 */
+  --primary-dark: #0F172A;    /* Slate 900 */
+  --text-main: #1E293B;       /* Slate 800 */
+  --text-muted: #64748B;      /* Slate 500 */
+  --border-divider: #E2E8F0;  /* Slate 200 */
+}
+
+/* 3. Base Body Reset */
+body {
+  background-color: var(--canvas-bg);
+  color: var(--text-main);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 4. Global Utility Overrides */
+.app-canvas {
+  background-color: var(--canvas-bg);
+  min-height: 100vh;
+}
+
+.app-card {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-divider);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.app-text-main {
+  color: var(--text-main);
+}
+
+.app-text-muted {
+  color: var(--text-muted);
+}
+
+.app-text-accent {
+  color: var(--primary-accent);
+}
+
+/* Custom Primary Button */
+.btn-accent {
+  background-color: var(--primary-accent);
+  border-color: var(--primary-accent);
+  color: #ffffff;
+
+  &:hover,
+  &:focus {
+    background-color: #4338ca;
+    border-color: #4338ca;
+    color: #ffffff;
+  }
+}
+
+/* Input & Select Focus Overrides */
+.form-control,
+.form-select {
+  border-color: var(--border-divider);
+  color: var(--text-main);
+
+  &:focus {
+    border-color: var(--primary-accent);
+    box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.15);
+  }
+}

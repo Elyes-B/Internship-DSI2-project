@@ -1,0 +1,53 @@
+<div id="pdf-report-root" class="pdf-container" style="display: block; width: 100%; min-height: 200px; background-color: #ffffff; padding: 15px; font-size: 11px;">
+
+  <!-- Header Section -->
+  <div class="mb-3 border-bottom pb-2">
+    <h4 class="text-primary m-0 fw-bold">User Activity Logs Report</h4>
+    <small class="text-muted">Total Exported Records: {{ logs.length }}</small>
+    <h6 class="text-secondary m-0 mt-2 fw-bold">Filters Used</h6>
+      <div class="col-4">ID: {{ id || 'None' }}</div>
+      <div class="col-4">User ID: {{ userId || 'None' }}</div>
+      <div class="col-4">Username: {{ username || 'None' }}</div>
+      <div class="col-4">IP: {{ ipAddress || 'None' }}</div>
+      <div class="col-4">Method: {{ controllerMethod || 'None' }}</div>
+      <div class="col-4">Action: {{ actionType || 'None' }}</div>
+      <div class="col-6">Start: {{ startDate || 'None' }}</div>
+      <div class="col-6">End: {{ endDate || 'None' }}</div>
+  </div>
+
+  <!-- Table Section with Strict Cell Width Constraints -->
+  <table class="table table-bordered align-middle mb-0" style="width: 100%; table-layout: fixed; word-wrap: break-word;">
+    <thead class="table-light small">
+      <tr>
+        <th style="width: 6%;">ID</th>
+        <th style="width: 10%;">User ID</th>
+        <th style="width: 12%;">Username</th>
+        <th style="width: 12%;">IP Address</th>
+        <th style="width: 15%;">Method</th>
+        <th style="width: 10%;">Action</th>
+        <th style="width: 12%;">URL Called</th>
+        <th style="width: 10%;">User Agent</th>
+        <th style="width: 13%;">Created Date</th>
+      </tr>
+    </thead>
+    <tbody class="small" style="font-size: 10px;">
+      @for (log of logs; track log.id) {
+        <tr>
+          <td class="fw-semibold text-break">{{ log.id }}</td>
+          <td class="text-break">{{ log.userId }}</td>
+          <td class="fw-semibold text-break">{{ log.username }}</td>
+          <td class="text-break">{{ log.ipAddress }}</td>
+          <td class="text-break">{{ log.controller_method }}</td>
+          <td class="text-break">{{ log.action_type }}</td>
+          <td class="text-break" style="font-size: 9px; word-break: break-all;">{{ log.url_called }}</td>
+          <td class="text-break">{{ log.user_agent}}</td>
+          <td class="text-break">{{ log.created_at}}</td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="8" class="text-center text-muted py-3">No logs found matching criteria.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

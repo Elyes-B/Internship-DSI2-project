@@ -1,0 +1,160 @@
+<div class="app-card p-4 mb-4">
+  <div class="row g-2 align-items-end">
+
+    <!-- ROW 1 -->
+    <!-- 1. Log ID (Width: 2/12) -->
+    <div class="col-12 col-sm-6 col-md-2">
+      <label class="form-label fw-semibold app-text-main small">Log ID</label>
+      <div class="input-group">
+        <span class="input-group-text bg-transparent text-muted px-2">
+          <i class="bi bi-hash"></i>
+        </span>
+        <input
+          type="number"
+          class="form-control"
+          placeholder="ID..."
+          [(ngModel)]="searchFilters.id"
+          (keyup.enter)="applyFilters()"
+        />
+      </div>
+    </div>
+
+    <!-- 2. User ID (Width: 2/12) -->
+    <div class="col-12 col-sm-6 col-md-2">
+      <label class="form-label fw-semibold app-text-main small">User ID</label>
+      <div class="input-group">
+        <span class="input-group-text bg-transparent text-muted px-2">
+          <i class="bi bi-person-badge"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="User ID..."
+          [(ngModel)]="searchFilters.userId"
+          (keyup.enter)="applyFilters()"
+        />
+      </div>
+    </div>
+
+    <!-- 3. Username (Width: 2/12) -->
+    <div class="col-12 col-sm-6 col-md-2">
+      <label class="form-label fw-semibold app-text-main small">Username</label>
+      <div class="input-group">
+        <span class="input-group-text bg-transparent text-muted px-2">
+          <i class="bi bi-person"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Username..."
+          [(ngModel)]="searchFilters.username"
+          (keyup.enter)="applyFilters()"
+        />
+      </div>
+    </div>
+
+    <!-- 4. IP Address (Width: 2/12) -->
+    <div class="col-12 col-sm-6 col-md-2">
+      <label class="form-label fw-semibold app-text-main small">IP Address</label>
+      <div class="input-group">
+        <span class="input-group-text bg-transparent text-muted px-2">
+          <i class="bi bi-hdd-network"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="IP Address..."
+          [(ngModel)]="searchFilters.ipAddress"
+          (keyup.enter)="applyFilters()"
+        />
+      </div>
+    </div>
+
+    <!-- 5. Method / Controller Name (Width: 2/12) -->
+    <div class="col-12 col-sm-6 col-md-2">
+      <label class="form-label fw-semibold app-text-main small">Controller/Method</label>
+      <div class="input-group">
+        <span class="input-group-text bg-transparent text-muted px-2">
+          <i class="bi bi-code-slash"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Method..."
+          [(ngModel)]="searchFilters.controllerMethod"
+          (keyup.enter)="applyFilters()"
+        />
+      </div>
+    </div>
+
+    <!-- ROW 2 -->
+    <!-- 6. Action Type (Width: 2/12) -->
+    <div class="col-12 col-sm-6 col-md-2">
+      <label class="form-label fw-semibold app-text-main small">Action Type</label>
+      <div class="input-group">
+        <span class="input-group-text bg-transparent text-muted px-2">
+          <i class="bi bi-lightning-charge"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="e.g. GET, POST..."
+          [(ngModel)]="searchFilters.actionType"
+          (keyup.enter)="applyFilters()"
+        />
+      </div>
+    </div>
+
+    <!-- 7. Start Date (Width: 2/12) -->
+    <div class="col-12 col-sm-6 col-md-2">
+      <label class="form-label fw-semibold app-text-main small">Start Date</label>
+      <div class="input-group">
+        <span class="input-group-text bg-transparent text-muted px-2">
+          <i class="bi bi-calendar-event"></i>
+        </span>
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="startDateStr"
+          (change)="applyFilters()"
+        />
+      </div>
+    </div>
+
+    <!-- 8. End Date (Width: 2/12) -->
+    <div class="col-12 col-sm-6 col-md-2">
+      <label class="form-label fw-semibold app-text-main small">End Date</label>
+      <div class="input-group">
+        <span class="input-group-text bg-transparent text-muted px-2">
+          <i class="bi bi-calendar-check"></i>
+        </span>
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="endDateStr"
+          (change)="applyFilters()"
+        />
+      </div>
+    </div>
+
+    <!-- 9. Empty Spacer Column (Width: 2/12) -->
+    <div class="col-12 col-sm-6 col-md-2 d-none d-md-block"></div>
+
+    <!-- 10. Action Buttons (Width: 2/12) -->
+    <div class="col-12 col-md-2 d-flex gap-2">
+      <button
+        type="button"
+        class="btn btn-accent w-100 text-nowrap"
+        (click)="applyFilters()">
+        <i class="bi bi-funnel-fill me-1"></i> Apply
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary w-100 text-nowrap"
+        (click)="resetFilters()">
+        <i class="bi bi-x-circle me-1"></i> Reset
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,65 @@
+services:
+  # first service ill be using is frontend with angular js (wont use codeigniter for display)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - frontend_net
+
+  # second service will be backend with codeigniter 4
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/var/www/html
+    env_file:
+      - ./backend/.env
+    networks:
+      - frontend_net
+      - backend_net
+
+  # for the 3rd service ill be using keycloak for authentification and role management (admin and super admin)
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak_auth
+    command: start-dev
+    ports:
+      - "8180:8080"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      # the second mount is used to enable a decrypt provide, check path for more info and read the methods
+      - ./keycloak/providers:/opt/keycloak/providers
+    env_file:
+      - .env
+    networks:
+      - frontend_net
+      - backend_net
+
+  # and lastly the 4th service will be mysql database 
+  db:
+    image: mysql:8.0
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - backend_net
+    ports:
+      - "3305:3305"
+
+volumes:
+  db_data:
+  keycloak_data:
+
+networks:
+  frontend_net:
+  backend_net:

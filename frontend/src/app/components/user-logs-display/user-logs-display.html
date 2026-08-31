@@ -1,0 +1,253 @@
+<div class="app-card p-4">
+
+  <app-searchbar-logs
+  (filterApplied)="onFiltersApplied()"
+  (filterReset)="onFiltersReset()"
+  (sendFilters)="recieveFilters($event)"
+  ></app-searchbar-logs>
+
+  <button
+    type="button"
+    class="btn btn-outline-primary d-inline-flex align-items-center gap-2 mb-3"
+    data-bs-toggle="modal"
+    data-bs-target="#exportPdfModal">
+    <i class="bi bi-file-earmark-pdf"></i>
+    Export
+  </button>
+
+  <!-- Header & Actions -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold app-text-main m-0">
+      <i class="bi bi-journal-text me-2"></i>System Activity Logs
+      <span class="badge bg-secondary-subtle text-dark ms-2 fs-6">{{ logs.length }} Records</span>
+    </h5>
+  </div>
+
+  <!-- Table Container -->
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Log ID</th>
+          <th>User ID</th>
+          <th>Username</th>
+          <th>IP Address</th>
+          <th>Action</th>
+          <th>Controller / Method</th>
+          <th>Created Date</th>
+          <th class="text-end">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (isLoading) {
+          <tr>
+            <td colspan="8" class="text-center py-4">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading logs...</span>
+              </div>
+            </td>
+          </tr>
+        } @else {
+          @for (log of paginatedLogs; track log.id) {
+            <tr>
+              <td class="fw-semibold">#{{ log.id }}</td>
+              <td class="small text-muted">{{ log.userId }}</td>
+              <td class="fw-semibold">{{ log.username }}</td>
+              <td>
+                <span class="badge bg-info-subtle text-info border border-info-subtle">
+                  {{ log.ipAddress }}
+                </span>
+              </td>
+              <td>
+                <span class="badge bg-secondary-subtle text-dark border">
+                  {{ log.action_type }}
+                </span>
+              </td>
+              <td>{{ log.controller_method }}</td>
+              <td class="small">{{ log.created_at }}</td>
+              <td class="text-end">
+                <button
+                  class="btn btn-sm btn-outline-secondary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#logDetailModal"
+                  (click)="selectLog(log)">
+                  <i class="bi bi-eye-fill"></i>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="text-center text-muted py-4">
+                No logs found matching your active filters.
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+    <span class="small text-muted">
+      Page {{ currentPage }} of {{ totalPages }}
+    </span>
+    <div class="btn-group btn-group-sm">
+      <button
+        class="btn btn-outline-secondary"
+        [disabled]="currentPage === 1"
+        (click)="setPage(currentPage - 1)">
+        Previous
+      </button>
+      <button
+        class="btn btn-outline-secondary"
+        [disabled]="currentPage === totalPages"
+        (click)="setPage(currentPage + 1)">
+        Next
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Log Detail Modal -->
+<div class="modal fade" id="logDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Log Record #{{ selectedLog?.id }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        @if (selectedLog) {
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="fw-bold small text-muted">User ID</label>
+              <p class="mb-0">{{ selectedLog.userId }}</p>
+            </div>
+            <div class="col-md-6">
+              <label class="fw-bold small text-muted">Username</label>
+              <p class="mb-0">{{ selectedLog.username }}</p>
+            </div>
+            <div class="col-md-6">
+              <label class="fw-bold small text-muted">IP Address</label>
+              <p class="mb-0">{{ selectedLog.ipAddress }}</p>
+            </div>
+            <div class="col-md-6">
+              <label class="fw-bold small text-muted">Action Type</label>
+              <p class="mb-0">{{ selectedLog.action_type }}</p>
+            </div>
+            <div class="col-md-6">
+              <label class="fw-bold small text-muted">Controller / Method</label>
+              <p class="mb-0">{{ selectedLog.controller_method }}</p>
+            </div>
+            <div class="col-md-6">
+              <label class="fw-bold small text-muted">Timestamp</label>
+              <p class="mb-0">{{ selectedLog.created_at }}</p>
+            </div>
+            <div class="col-12">
+              <label class="fw-bold small text-muted">URL Called</label>
+              <p class="p-2 bg-light rounded text-break mb-0">{{ selectedLog.url_called }}</p>
+            </div>
+            <div class="col-12">
+              <label class="fw-bold small text-muted">User Agent</label>
+              <p class="p-2 bg-light rounded text-break small mb-0">{{ selectedLog.user_agent }}</p>
+            </div>
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exportPdfModal" tabindex="-1" aria-labelledby="exportPdfModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exportPdfModalLabel">
+          <i class="bi bi-box-arrow-up-right me-2 text-primary"></i>Export User Logs Data
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body d-flex flex-column gap-3">
+
+        <!-- Export Format Selection -->
+        <div>
+          <label for="exportFormatSelect" class="form-label fw-semibold">Export Format</label>
+          <select
+            id="exportFormatSelect"
+            class="form-select"
+            [(ngModel)]="selectedExportFormat">
+            <option value="pdf">PDF Document (.pdf)</option>
+            <option value="excel">Excel Spreadsheet (.xlsx)</option>
+          </select>
+        </div>
+
+        <!-- Maximum Records Input -->
+        <div>
+          <label for="maxUsersInput" class="form-label fw-semibold">Maximum Records to Export</label>
+          <input
+            type="number"
+            id="maxUsersInput"
+            class="form-control"
+            [(ngModel)]="exportMaxLimit"
+            [disabled]="exportAllUsers"
+            min="1"
+            [max]="logs.length"
+            placeholder="e.g. 100">
+        </div>
+
+        <!-- Export All Checkbox -->
+        <div class="form-check">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            id="importAllUsers"
+            [(ngModel)]="exportAllUsers">
+          <label class="form-check-label fw-semibold" for="importAllUsers">
+            Export all logs ({{ logs.length }} total)
+          </label>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button
+          type="button"
+          class="btn btn-primary d-inline-flex align-items-center gap-2"
+          (click)="handleExport()"
+          data-bs-dismiss="modal">
+          @if (isExporting) {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Generating Export...
+          } @else {
+            <i class="bi"></i>
+            Download {{ selectedExportFormat  }}
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OFF-SCREEN PRINTABLE CONTAINER -->
+<div style="position: absolute; top: 0; left: 0; width: 790px; z-index: -9999; visibility: hidden;">
+  <app-user-logs-display-report
+    #export
+    [logs]="exportUsers"
+    [id]="filters.id"
+    [userId]="filters.userId"
+    [username]="filters.username"
+    [ipAddress]="filters.ipAddress"
+    [controllerMethod]="filters.controllerMethod"
+    [actionType]="filters.actionType"
+    [startDate]="filters.startDate"
+    [endDate]="filters.endDate">
+  </app-user-logs-display-report>
+</div>
+
+<!-- Hidden Printable Report for HTML2Canvas Export -->
+
