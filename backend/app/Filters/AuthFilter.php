@@ -28,11 +28,10 @@ class AuthFilter implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        if (strtolower($request->getMethod()) === 'options') {
-        return;
-        }
+        // we first get the auth token from keycloak provided by the interceptor service
         $token = $request->getHeaderLine('Authorization');
 
+        // if the user dosent have a token that means he is not authenticated meaning his request is invalid
         if(empty($token)){
             return Services::response()
             ->setStatusCode(401)
@@ -41,11 +40,12 @@ class AuthFilter implements FilterInterface
             ]);
         }
 
-
+        //JWT  tokens need to be sparated using expode, so can fetch the data
         $tokenData = explode('.', $token);
+        // i used firebase dependency for decoding
         $tokenData = JWT::urlsafeB64Decode($tokenData[1]);
         $data = json_decode($tokenData,true);
-
+        // if the token is invalid we quit the method
         if(empty($data)){
             return Services::response()
             ->setStatusCode(401)
@@ -53,7 +53,7 @@ class AuthFilter implements FilterInterface
                 'message' => 'token decoding error'
             ]);
         }
-
+        //otherwise we start the process of gathering the log info and saving it
         $userLogger =new UserLoggerService();
         
         $userLogger->gatherLogData($data);

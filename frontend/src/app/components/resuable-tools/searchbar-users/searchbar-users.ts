@@ -11,6 +11,8 @@ import { CommonModule} from '@angular/common';
   styleUrl: './searchbar-users.css',
 })
 export class SearchbarUsers {
+  //all the searchbar reusable elements are similar, we have the default variable for the filters, and we have method for
+  // reseting , applying and sending the filters to the parent component
   searchId: number  = 0;
   searchQuery: string = '';
   selectedRole: string = '';

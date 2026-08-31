@@ -53,7 +53,7 @@ export class UserDisplay implements OnInit,OnDestroy{
   ngOnInit(): void {
     this.timerId = this.intervalService.startPolling(()=>this.loadUsers(),60000);
   }
-
+    //counters used for the counter components
     get totalUsersCount(){
       return this.userService.totalUsersCount(this.allUsers);
     }

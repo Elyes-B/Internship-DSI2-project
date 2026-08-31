@@ -21,11 +21,13 @@ import { FormsModule } from '@angular/forms';
 })
 
 export class ActiveUsersDisplay implements OnInit,OnDestroy {
+  //services used in this component
   private userService = inject(UserService);
   private intervalService = inject(IntervalService);
 
 
-
+  //since this page contains 2 tables and 2 searchbars (one for db userrs and the other for sessions) that means we will be dividing our code into 2
+  // one for db and the other for session, this applies to the seach filters as well
   usersFilters:SearchbarFiltersUsers = {
       'searchId':0,
       'searchQuery':'',
@@ -50,6 +52,7 @@ export class ActiveUsersDisplay implements OnInit,OnDestroy {
 
   timerId:any;
   @ViewChild('export') export!: ElementRef<HTMLElement>;
+  // to know which table and seach component to show to the user we use this variable with a button to change its value
   activeTab: 'keycloak' | 'database' = 'keycloak';
   isLoading: boolean = true;
   isExporting: boolean = false;
@@ -59,21 +62,22 @@ export class ActiveUsersDisplay implements OnInit,OnDestroy {
   keycloakSessions: KeycloakSessions[] = [];
   databaseUsers: UserModel[] = [];
 
+  //this executes when the program starts
   ngOnInit(): void {
     this.timerId = this.intervalService.startPolling(()=>this.loadData(),60000);
 
   }
-
+  // and stopes the method when we leave the component
   ngOnDestroy(): void {
     this.intervalService.stopPolling(this.timerId);
   }
 
-  // Method Stubs
+  // buttons that switch the tables and search bar
   switchTab(tab: 'keycloak' | 'database'): void {
     this.activeTab = tab;
   }
 
-
+  // call the main method that fetches both db and  sessions and manages the boolean responsible for showing the loading bar during the fetching process
   loadData(): void {
     this.isLoading = true;
     this.loadKeycloakSessions();
@@ -81,7 +85,7 @@ export class ActiveUsersDisplay implements OnInit,OnDestroy {
   }
 
 loadKeycloakSessions(){
-
+// gets the filtered keycloak sessions depending on the searches used
 this.userService.getKeycloakActiveUsers(
   this.sessionFilters.searchSessionId,
   this.sessionFilters.searchKeycloakId,
@@ -91,6 +95,7 @@ this.userService.getKeycloakActiveUsers(
 ).subscribe(
       {
         next:(response)=>{
+          // passes them to this method which will use the users search filter to get the related sessions
           this.filterKeyCloakSessions(response.data);
         }
       }
@@ -98,8 +103,11 @@ this.userService.getKeycloakActiveUsers(
 
 }
 
+// when a user uses the users seearch filters, we need to adjust the sessions search result to match that
+// to do that we use the shared column between the 2 (username) and compare them, if the user filter username matches the sessions we have, then we keep them
 filterKeyCloakSessions(keycloakSessions: KeycloakSessions[]): void {
     let filteredSessions: KeycloakSessions[] = [];
+    //get all the users depending on the  filters
     this.userService.getUsers(
       this.usersFilters.searchId,
       this.usersFilters.searchQuery,
@@ -109,7 +117,7 @@ filterKeyCloakSessions(keycloakSessions: KeycloakSessions[]): void {
       next: (response) => {
         console.log(response.data);
         let users = response.data;
-        users.forEach(user => {
+        users.forEach(user => { //for each users we check if they share the same username as the session
           keycloakSessions.forEach(session => {
             if (session.username == user.username) {
               filteredSessions.push(session);
@@ -120,19 +128,22 @@ filterKeyCloakSessions(keycloakSessions: KeycloakSessions[]): void {
         // Store filtered sessions
         this.keycloakSessions = filteredSessions;
 
-        // Trigger next steps ONLY after filtering is finished
+        // to fetch the db users we also will have to use the usernames to get only db users that have an active session
         let usernames = this.getAllUsernamesFromSessions();
+        // get the db users
         this.loadDbUsers(usernames);
       }
     });
   }
 
+
   loadDbUsers(usernames:string[]): void {
     console.log(usernames)
+    //sends a request to the backend to fetch  only the  users who share the same username from that list
     this.userService.getDbActiveUsersFromUsernames(usernames).subscribe(
       {
         next:(response)=>{
-          this.databaseUsers = response.data;
+          this.databaseUsers = response.data; //attach it to the main variable for db users
           console.log(this.databaseUsers);
         }
       }
@@ -140,6 +151,7 @@ filterKeyCloakSessions(keycloakSessions: KeycloakSessions[]): void {
 
   }
 
+  // gets all the usernames from the sessions and returns them as an array
   getAllUsernamesFromSessions():string[]{
     let usernames:string[] = [];
     this.keycloakSessions.forEach(session => {
@@ -149,6 +161,7 @@ filterKeyCloakSessions(keycloakSessions: KeycloakSessions[]): void {
     return usernames;
   }
 
+  //counters variable used for display
   get totalUsersCount(){
       return this.userService.totalUsersCount(this.databaseUsers);
     }
@@ -169,7 +182,7 @@ onFiltersReset(): void {
   this.currentPage = 1;
   this.loadData(); // Fetch default/unfiltered list
 }
-
+//the reusable component sends us the filters the users used and we apply them to our filters variables
 recieveFilters(filters:SearchbarFiltersUsers):void{
   this.usersFilters = filters;
 }
@@ -186,7 +199,7 @@ get currentActiveList(): any[] {
   get currentPaginatedItems(): any[] {
     return this.activeTab === 'keycloak' ? this.paginatedKeycloakSessions : this.paginatedUsers;
   }
-
+  //same pagination logic as the other components
   get totalPages(): number {
     return Math.ceil(this.currentActiveList.length / this.pageSize) || 0;
   }

@@ -16,19 +16,19 @@ data:{
 children:[
     {
         path: '',
-        pathMatch: 'full',
+        pathMatch: 'full', // the default admin path is display users
         redirectTo: 'users'
       },
       {
-        path: 'users',
+        path: 'users', //displays all users from db
         component: UserDisplay
       },
       {
-        path:'sessions',
+        path:'sessions', //displays session from the db or from keycloak(active sessions)
         component: ActiveUsersDisplay
       },
       {
-        path:'logs',
+        path:'logs', //displays logs
         component: UserLogsDisplay
       }
 ]

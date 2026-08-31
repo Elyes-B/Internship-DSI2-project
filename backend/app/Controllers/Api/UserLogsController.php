@@ -9,16 +9,16 @@ class UserLogsController extends ResourceController
 {
     public function index()
     {
-    // 1. Retrieve query parameters
+    // first we get the filter parameters
     $id = $this->request->getGet('id');
-    $userId = $this->request->getGet('userId'); // Match variable name
+    $userId = $this->request->getGet('userId');
     $username   = $this->request->getGet('username');
     $ipAddress = $this->request->getGet('ipAddress');
     $controllerMethod = $this->request->getGet('controller_method');
     $actionType = $this->request->getGet('action_type');
     $startDate = $this->request->getGet('startDate');
     $endDate = $this->request->getGet('endDate');
-
+    //second we use the model to apply the filters like the other controllers
     $builder =new UserLogModel();
     
     if (!empty($id)) {

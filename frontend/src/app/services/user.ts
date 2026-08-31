@@ -15,9 +15,8 @@ export class UserService {
   // Base URL pointing to your CodeIgniter API
   private apiUrl = 'http://localhost:8080/api/users';
 
-  /**
-   * Fetch users from CodeIgniter with optional search, role, and status filters.
-   */
+  // for this methods and all other methods for fetching logs or session we will take the filters, add them as a parameter to a get request, in which the backend will
+  // use them to filter users
   getUsers(id:number = 1,search: string = '', role: string = '', status: string = ''): Observable<ApiResponse<UserModel[]>> {
     let params = new HttpParams();
     if (id) {
@@ -39,7 +38,6 @@ export class UserService {
       params = params.set('status', status);
     }
 
-    // Sends GET http://localhost:8080/api/users?search=...&role=...&status=...
     return this.http.get<ApiResponse<UserModel[]>>(this.apiUrl, { params });
   }
 
@@ -65,6 +63,7 @@ export class UserService {
       params = params.set('ipAddress', ipAddress);
     }
 
+    // this boolean determines if the backend should search throughout the database for ALL sessions or only active sessions which is provided by keycloak
     if(onlyActiveSessions){
       params = params.set('onlyActiveSessions', onlyActiveSessions);
     }
@@ -72,6 +71,8 @@ export class UserService {
     return this.http.get<ApiResponse<KeycloakSessions[]>>(url,{params});
   }
 
+  // for active sessions, keycloak has a method to return all the current active authenticated users, but they share different information to the database
+  // that is why i created this method will uses username as the shared column between the 2 and find all the users in the db from it
   getDbActiveUsersFromUsernames(usernames:string[]){
     let url = this.apiUrl + '/active/db';
 
@@ -88,7 +89,7 @@ export class UserService {
   public totalSuperadminCount(allUsers:UserModel[]){
         return this.roleCount(allUsers,'superadmin');
       }
-
+      //instead of copy pasting the code i made the 3 methods above just call this method
       public roleCount(allUsers:UserModel[],role: string): number {
         let counter: number = 0;
         allUsers.forEach(user => {
@@ -99,6 +100,7 @@ export class UserService {
         return counter;
       }
 
+    // same thing as get users the parameters will be used in the backend to filter logs
   public getUserLogs(id:number,userId:string,username:string,ipAddress:string,controllerMethod:string,actionType:string,startDate:string,endDate:string){
   let params = new HttpParams();
     if (id) {

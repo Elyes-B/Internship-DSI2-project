@@ -11,6 +11,7 @@ import { SearchFilterSessions } from '../../../models/search-filter-sessions';
   styleUrl: './active-user-display-report.css',
 })
 export class ActiveUserDisplayReport {
+  // each report page will the list of info to display alongisde the filters used to fetch those info
   today = new Date().toString();
   @Input() users: UserModel[] = [];
   @Input() keycloakSessions: KeycloakSessions[] = [];
@@ -27,6 +28,7 @@ export class ActiveUserDisplayReport {
       'searchIpAddress':'',
       'onlyActiveSessions':false
     }
+  // we use this variable to determine which table to export, either keyclock or db sessions
   @Input() reportMode:string = 'keycloak';
 
 }

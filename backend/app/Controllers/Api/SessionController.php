@@ -7,26 +7,31 @@ use App\Models\SessionModel;
 use CodeIgniter\RESTful\ResourceController;
 
 class SessionController extends ResourceController
-{
+{   // we will use the keycloak admin service to help us fetch sessions
     private KeycloakAdminService $keycloakAdminService;
+    // the index method returns sessions depending on filters
     public function index()
     {
     helper('ms_to_date');
+    //filters used by the usesr
     $id = $this->request->getGet('id');
-    $userId = $this->request->getGet('userId'); // Match variable name
+    $userId = $this->request->getGet('userId'); 
     $ipAddress   = $this->request->getGet('ipAddress');
     $userName = $this->request->getGet('userName');
-    $onlyActiveSessions = $this->request->getGet('onlyActiveSessions');
+    $onlyActiveSessions = $this->request->getGet('onlyActiveSessions'); // determines if we fetch from db or keycloak action sessions
 
     $this->keycloakAdminService = new KeycloakAdminService();
+    // first we fetch active users
     $users = $this->keycloakAdminService->getActiveUsers();
     $formattedUsers = [];
 
+    // but if the users decides to fetch all sessions then we ignore the previous value and apply a new one
     if($onlyActiveSessions == false){
         $sessionModel =new SessionModel();
         $users = $sessionModel->asArray()->findAll();
     }
-
+    // we filter users by using loops with comparison
+    //  we use the helper method to transform the dates to from ms to datetime for display
     foreach($users as $user){
         $matchId       = empty($id)        || (isset($user['id']) && $user['id'] == $id);
         $matchUserId   = empty($userId)    || (isset($user['userId']) && $user['userId'] == $userId);
@@ -42,14 +47,14 @@ class SessionController extends ResourceController
         $formattedUsers[] = $user;
     }
     }
-
+    // return the users
     return $this->respond([
         'status' =>200,
         'data' =>$formattedUsers
     ]);
 
     }
-
+    //fetches a session from a session id from active sessions
     public function getSessionBySessionId(){
         $this->keycloakAdminService = new KeycloakAdminService();
         $id = $this->request->getGet('id');
@@ -63,7 +68,7 @@ class SessionController extends ResourceController
         'data' =>$userSession
     ]);
     }
-
+    //gets the session sent from the post request and saves it after using helper date to transform it from ms to date
     public function registerSession(){
         helper('ms_to_date');
         $session = $this->request->getJSON(true);

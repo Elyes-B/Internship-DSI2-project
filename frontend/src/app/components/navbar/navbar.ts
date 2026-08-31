@@ -12,6 +12,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 export class Navbar {
   public authService = inject(AuthService);
 
+  //login and logout buttons calls the auth service login and logout methods
   logout(): void {
     this.authService.logout();
   }

@@ -9,6 +9,7 @@ import { UserModel } from '../../../models/user.model';
   styleUrl: './user-display-report.css',
 })
 export class UserDisplayReport {
+  // each report page will the list of info to display alongisde the filters used to fetch those info
   @Input() users: UserModel[] = [];
   @Input() id:number = 1;
   @Input() searchQuery:string = '';

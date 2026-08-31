@@ -16,13 +16,18 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './user-logs-display.css',
 })
 export class UserLogsDisplay {
+  //we inject all the services we need
   private userService = inject(UserService);
-  @ViewChild('export') export!: ElementRef<HTMLElement>;
-  private intervalService = inject(IntervalService);
-  isExporting: boolean = false;
   private exportService = inject(ExportService);
-  logs: UserLog[] = [];
+  private intervalService = inject(IntervalService);
+
+  //this marks the html element that will be used for exporting, if an element has #export this line will detect it and save its html
+  @ViewChild('export') export!: ElementRef<HTMLElement>;
+  isExporting: boolean = false;
+  logs: UserLog[] = []; // contains the list of all logs that will be displayed
   isLoading: boolean = false;
+  // the search filter, we first intialize it with empty values
+  // to filter the logs with dates as request we need a start date and end date
   filters: SearchFilterLogs = {
     id: 0,
     userId: '',
@@ -63,6 +68,7 @@ export class UserLogsDisplay {
     this.timerId = this.intervalService.startPolling(()=>this.loadUsers(),60000);
   }
 
+  // if the users leaves the component it self closes the method its been running with the interval service
   ngOnDestroy(): void {
   this.intervalService.stopPolling(this.timerId);
   }
@@ -70,37 +76,42 @@ export class UserLogsDisplay {
   // Selected log for detailed view
   selectedLog: UserLog | null = null;
 
-  // Pagination
+  // Pagination variables
   currentPage: number = 1;
   pageSize: number = 10;
 
+  // total pages variables that gets displays the bottom of the table
   get totalPages(): number {
     return Math.ceil(this.logs.length / this.pageSize) || 1;
   }
 
+  // returns the paginated logs to show in the display table depending on the page choosen( i choose to paginate the data so the user doesnt have to scroll to see all the data)
   get paginatedLogs(): UserLog[] {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     return this.logs.slice(startIndex, startIndex + this.pageSize);
   }
 
+  // a button triggers this to change the current page
   setPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
     }
   }
 
+  // since the  log showcased in the table  lacks some of the info requested by the team, i choose to add a button that shows a modal with all the data
+  // to do that i made the button select the choosen log and then triggers the modal with the selected log
   selectLog(log: UserLog): void {
     this.selectedLog = log;
   }
 
 onFiltersApplied(): void {
   this.currentPage = 1;
-  this.loadUsers(); // Pass filters to your API call
+  this.loadUsers(); // passes the filters entered by the user and resets the page count
 }
 
 onFiltersReset(): void {
   this.currentPage = 1;
-  this.loadUsers(); // Fetch default/unfiltered list
+  this.loadUsers(); // resets filters and pages
 }
 
 recieveFilters(filters:SearchFilterLogs):void{

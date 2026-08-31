@@ -20,18 +20,18 @@ class UserController extends ResourceController
     //the point of this method is to fetch a list of users depending on the filters the admin user
     public function index()
 {
-    // 1. Retrieve query parameters
+    // filter parameters sent via get parameters
     $id = $this->request->getGet(('id'));
-    $search = $this->request->getGet('search'); // Match variable name
+    $search = $this->request->getGet('search');
     $role   = $this->request->getGet('role');
     $status = $this->request->getGet('status');
-
+    // we use the model to search through the db tables using the filters
     $builder =new UserModel();
     if (!empty($id)) {
         $builder->where('id',$id);
     }
 
-    // 2. Search Filter (Grouped OR conditions)
+    
     if (!empty($search)) {
         $builder->groupStart()
                 ->like('username', $search)   
@@ -39,12 +39,12 @@ class UserController extends ResourceController
                 ->groupEnd();
     }
 
-    // 3. Role Filter (Independent of search)
+    
     if (!empty($role)) {
         $builder->where('role', $role);
     }
 
-    // 4. Status Filter (Independent of search)
+    
     if (!empty($status)) {
     if ($status === 'deleted') {
         $builder->where('is_deleted IS NOT NULL');
@@ -53,7 +53,7 @@ class UserController extends ResourceController
     }
     }
 
-    // 5. Fetch all records
+    
     $users = $builder->findAll();
 
     return $this->respond([
@@ -63,7 +63,7 @@ class UserController extends ResourceController
 }
 
 
-
+//here we get the usersname of active sessions and  fetch their respective user from the db
 public function getAllUsersFromUsernameList(){
     $usernames = $this->request->getVar('usernames');
 
@@ -74,7 +74,7 @@ public function getAllUsersFromUsernameList(){
         'message' => 'no usernames were sent, an empty array was received in the backend'
     ]);
     }
-
+    // we use model to match usernames
     $builder =new UserModel();
     $users = $builder->whereIn('username',$usernames)
     ->findAll();

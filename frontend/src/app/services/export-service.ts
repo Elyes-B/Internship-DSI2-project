@@ -6,7 +6,7 @@ import * as XLSX from 'xlsx';
   providedIn: 'root',
 })
 export class ExportService {
-
+  // pdf parameters
   exportToPdf(element: HTMLElement, filename = 'document.pdf'): void {
     const options = {
     margin: 0,
@@ -23,13 +23,15 @@ export class ExportService {
       orientation: 'landscape' as 'landscape'
     }
   };
+  // we save the html element  and export it as pdf
     html2pdf().set(options).from(element).save();
   }
 
   exportToExcel(tableElement: HTMLElement, filename = 'export.xlsx'): void {
-    // 1. Generate worksheet directly from HTML table node
+    // it takes the table from the html element provides and automatically turns it into an excel file
     const worksheet: XLSX.WorkSheet = XLSX.utils.table_to_sheet(tableElement);
 
+    //sizes used for the excel columns
     worksheet['!cols'] = [
       { wch: 20 }, // Username
       { wch: 30 }, // Email
@@ -39,11 +41,11 @@ export class ExportService {
       { wch: 12 }  // Is Deleted
     ];
 
-    // 2. Create a new workbook and attach worksheet
+    // prepare the excel file
     const workbook: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
 
-    // 3. Trigger immediate file download
+    // execute the file and download it
     XLSX.writeFile(workbook, filename);
   }
 }

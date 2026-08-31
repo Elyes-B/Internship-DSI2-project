@@ -10,11 +10,13 @@ import { SearchFilterSessions } from '../../../models/search-filter-sessions';
   styleUrl: './searchbar-sessions.css',
 })
 export class SearchbarSessions {
+  //all the searchbar reusable elements are similar, we have the default variable for the filters, and we have method for
+  // reseting , applying and sending the filters to the parent component
   searchSessionId: string = '';
   searchKeycloakId: string = '';
   searchUsername: string = '';
   searchIpAddress: string = '';
-  onlyActiveSessions: boolean = false; // <-- New bind variable
+  onlyActiveSessions: boolean = false;
 
   // Events emitted to parent
   @Output() filterApplied = new EventEmitter<void>();
@@ -31,7 +33,7 @@ export class SearchbarSessions {
     this.searchSessionId = '';
     this.searchUsername = '';
     this.searchIpAddress = '';
-    this.onlyActiveSessions = false; // <-- Reset check state
+    this.onlyActiveSessions = false;
 
     this.filtersToParent();
     this.filterReset.emit();
@@ -43,7 +45,7 @@ export class SearchbarSessions {
       searchKeycloakId: this.searchKeycloakId,
       searchUsername: this.searchUsername,
       searchIpAddress: this.searchIpAddress,
-      onlyActiveSessions: this.onlyActiveSessions // <-- Included in payload
+      onlyActiveSessions: this.onlyActiveSessions 
     });
   }
 }

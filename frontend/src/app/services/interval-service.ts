@@ -4,6 +4,8 @@ import { interval, startWith, Subscription, tap } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
+
+// this service is used always execute methods depending on a time internval, useful for when the data updates
 export class IntervalService {
   //this method takes an interval and a time in miliseconds where the method executes at the start and in interval depending on the passed time
   startPolling(action: () => void, timeInMiliseconds: number = 60): any {

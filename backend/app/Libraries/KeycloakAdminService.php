@@ -153,6 +153,7 @@ class KeycloakAdminService
             return ['status' => 'success', 'successfully synced an admin with email: '.$admin->email];
     }
 
+    //this method is used in case a previous admin gets his role change from admin to user, in that case we need to update keycloak to disable his admin permissions
     private function setKeycloakUserEnabledStatus(string $keycloakUserId, bool $enabled, string $token): void
     {
         $url = "{$this->baseUrl}/admin/realms/{$this->realm}/users/{$keycloakUserId}";
@@ -163,7 +164,7 @@ class KeycloakAdminService
                 'Content-Type'  => 'application/json',
             ],
             'http_errors' => false,
-            'json' => ['enabled' => $enabled],
+            'json' => ['enabled' => $enabled],// we remove him the keycloak admin list by setting it disable
         ]);
     }
 
@@ -219,7 +220,7 @@ class KeycloakAdminService
         ]);
         return json_decode($response->getBody(), true);
    
-}
+}   // we use this method to get a session from an  id and then save it in the db using a controller
     public function getSessionFromSessionId($id){
         $sessions = $this->getActiveUsers();
 

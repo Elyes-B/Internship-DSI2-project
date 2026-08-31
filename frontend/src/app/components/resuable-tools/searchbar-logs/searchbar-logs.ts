@@ -10,6 +10,8 @@ import { FormsModule } from '@angular/forms';
 })
 
 export class SearchbarUserLogs {
+  //all the searchbar reusable elements are similar, we have the default variable for the filters, and we have method for
+  // reseting , applying and sending the filters to the parent component
   @Output() filterApplied = new EventEmitter<void>();
   @Output() filterReset = new EventEmitter<void>();
   @Output() sendFilters = new EventEmitter<SearchFilterLogs>();
@@ -29,6 +31,7 @@ export class SearchbarUserLogs {
   startDateStr: string = '';
   endDateStr: string = '';
 
+  // i added this method since php datetime was not deing displayed  correctly
   private formatDateToString(dateValue: string | Date | null): string {
     if (!dateValue) return '';
     const dateObj = new Date(dateValue);

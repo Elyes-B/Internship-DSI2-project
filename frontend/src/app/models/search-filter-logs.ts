@@ -1,3 +1,4 @@
+// each filter has its own model
 export interface SearchFilterLogs {
   id:number;
   userId:string;

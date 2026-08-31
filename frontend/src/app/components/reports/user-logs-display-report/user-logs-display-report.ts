@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './user-logs-display-report.css',
 })
 export class UserLogsDisplayReport {
+  // each report page will the list of info to display alongisde the filters used to fetch those info
   @Input() logs: UserLog[] = [];
   @Input() id: number = 0;
   @Input() userId: string = '';
