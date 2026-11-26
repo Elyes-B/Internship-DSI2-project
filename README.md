@@ -1,17 +1,3 @@
-# Introduction  
-
-first of all i would like to apologise for delay, the reason why it took me so long to finish the project is because i had to learn many new things before i start working on which are :
-
-- docker
-- angulard
-- keycloak
-- code igniter
-- typescript
-
-i have ran into many errors when working with those technologies which took a long time to debug and solve
-  
-this project is an internship project requested by the AMA business team, the original email sent by the AMA team requested the following features:  
-
 ## Functional specifications
   
 - Displaying the list of users.  
